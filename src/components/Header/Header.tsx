@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Popover from '../Popover'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import authAPI from 'src/apis/auth.api'
 import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
@@ -15,6 +15,7 @@ import { purchasesStatus } from 'src/constants/purchase'
 import purchaseAPI from 'src/apis/purchase.api'
 import { formatCurrency } from 'src/utils/utils'
 import noPurchase from 'src/img/no-purchase.png'
+import Cart from 'src/pages/Cart'
 
 type FormData = Pick<Schema, 'name'>
 const nameSchema = schema.pick(['name'])
@@ -22,6 +23,7 @@ const MAX_PURCHASE = 5
 
 export default function Header() {
   const queryConfig = useQueryConfig()
+  const queryClient = useQueryClient()
   const { register, handleSubmit } = useForm<FormData>({
     defaultValues: {
       name: ''
@@ -35,11 +37,13 @@ export default function Header() {
     onSuccess: () => {
       setIsAuthenticated(false)
       setProfile(null)
+      queryClient.removeQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] })
     }
   })
   const { data: purchasesIncartData } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
-    queryFn: () => purchaseAPI.getPurchases({ status: purchasesStatus.inCart })
+    queryFn: () => purchaseAPI.getPurchases({ status: purchasesStatus.inCart }),
+    enabled: isAuthenticated
   })
   const purchasesIncart = purchasesIncartData?.data.data
   const handleLogout = () => {
@@ -218,17 +222,20 @@ export default function Header() {
                       <div className='mt-6 flex items-center justify-between'>
                         <div className='text-xs capitalize text-gray-600'>
                           {purchasesIncart.length > MAX_PURCHASE ? purchasesIncart.length - MAX_PURCHASE : ''}
-                          {' SP'}Thêm vào giỏ hàng
+                          Thêm vào giỏ hàng
                         </div>
-                        <button className='rounded-md bg-orange px-4 py-2  capitalize text-white hover:bg-opacity-90'>
+                        <Link
+                          to={path.cart}
+                          className='rounded-md bg-orange px-4 py-2  capitalize text-white hover:bg-opacity-90'
+                        >
                           Xem giỏ hàng
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   ) : (
-                    <div className='flex h-[300px] w-[300px] items-center justify-center p-2'>
+                    <div className='flex h-[300px] w-[300px] flex-col items-center justify-center p-2'>
                       <img src={noPurchase} alt='no-purchase' className='h-20 w-20' />
-                      <div className='mt-3 capitalize'></div>Chưa có sản phẩm
+                      <div className='mt-3 capitalize'>Chưa có sản phẩm</div>
                     </div>
                   )}
                 </div>
@@ -249,9 +256,11 @@ export default function Header() {
                     d='M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z'
                   />
                 </svg>
-                <span className='absolute left-[17px] top-[-5px] rounded-full bg-white px-[9px] py-[1px] text-xs text-orange'>
-                  {purchasesIncart?.length}
-                </span>
+                {isAuthenticated && (
+                  <span className='absolute left-[17px] top-[-5px] rounded-full bg-white px-[9px] py-[1px] text-xs text-orange'>
+                    {purchasesIncart?.length}
+                  </span>
+                )}
               </Link>
             </Popover>
           </div>
