@@ -45,15 +45,15 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
   }
 
   return (
-    <div className='bg-gray-300/40 px-3 py-4'>
+    <div className='rounded-lg border-2 border-dashed border-opacity-5 bg-white px-2 py-4'>
       {' '}
       <div className='flex flex-wrap items-center justify-between gap-2'>
         <div className='flex flex-wrap items-center gap-2'>
-          <span>Sắp xếp theo</span>
+          <span className='font-bold'>Sắp xếp theo: </span>
           <button
             className={classNames('h-8 px-4 text-center text-sm capitalize', {
-              'bg-orange text-white hover:bg-orange/80': isActiveSortBy(sortBy.view),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.view)
+              'rounded-lg bg-orange text-white hover:bg-orange/80': isActiveSortBy(sortBy.view),
+              ' rounded-lg border bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.view)
             })}
             onClick={() => handleSort(sortBy.view)}
           >
@@ -61,8 +61,8 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           </button>
           <button
             className={classNames('h-8 px-4 text-center text-sm capitalize', {
-              'bg-orange text-white hover:bg-orange/80': isActiveSortBy(sortBy.createAt),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.createAt)
+              'rounded-lg bg-orange text-white hover:bg-orange/80': isActiveSortBy(sortBy.createAt),
+              'rounded-lg border bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.createAt)
             })}
             onClick={() => handleSort(sortBy.createAt)}
           >
@@ -70,8 +70,8 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           </button>
           <button
             className={classNames('h-8 px-4 text-center text-sm capitalize', {
-              'bg-orange text-white hover:bg-orange/80': isActiveSortBy(sortBy.sold),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.sold)
+              'rounded-lg bg-orange text-white hover:bg-orange/80': isActiveSortBy(sortBy.sold),
+              'rounded-lg border bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.sold)
             })}
             onClick={() => handleSort(sortBy.sold)}
           >
@@ -79,8 +79,8 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           </button>
           <select
             className={classNames(' h-8 px-4 text-left text-sm capitalize outline-none', {
-              'bg-orange text-white hover:bg-orange/80': isActiveSortBy(sortBy.price),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.price)
+              'rounded-lg bg-orange text-white hover:bg-orange/80': isActiveSortBy(sortBy.price),
+              'rounded-lg border bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.price)
             })}
             value={order || ''}
             onChange={(event) => handlePriceOrder(event.target.value as Exclude<ProductListConfig['order'], undefined>)}
@@ -103,7 +103,7 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           </div>
           <div className='ml-2 flex'>
             {page === 1 ? (
-              <span className='flex h-8 w-9 cursor-not-allowed items-center justify-center rounded-bl-sm rounded-tl-sm bg-white/60 px-3 shadow hover:bg-slate-100'>
+              <span className='flex h-8 w-9 cursor-not-allowed items-center justify-center rounded-bl-lg rounded-tl-sm bg-white/60 px-3 shadow hover:bg-slate-100'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'

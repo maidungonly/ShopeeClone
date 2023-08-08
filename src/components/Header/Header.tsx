@@ -1,161 +1,34 @@
 /* eslint-disable jsx-a11y/img-redundant-alt */
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Popover from '../Popover'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import authAPI from 'src/apis/auth.api'
+import { useQuery } from '@tanstack/react-query'
 import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import path from 'src/constants/path'
-import useQueryConfig from 'src/hooks/useQueryConfig'
-import { useForm } from 'react-hook-form'
-import { Schema, schema } from 'src/utils/rules'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { omit } from 'lodash'
 import { purchasesStatus } from 'src/constants/purchase'
 import purchaseAPI from 'src/apis/purchase.api'
 import { formatCurrency } from 'src/utils/utils'
 import noPurchase from 'src/img/no-purchase.png'
-import Cart from 'src/pages/Cart'
+import NavHeader from '../NavHeader/NavHeader'
+import useSearchProduct from 'src/hooks/useSearchProduct'
 
-type FormData = Pick<Schema, 'name'>
-const nameSchema = schema.pick(['name'])
 const MAX_PURCHASE = 5
 
 export default function Header() {
-  const queryConfig = useQueryConfig()
-  const queryClient = useQueryClient()
-  const { register, handleSubmit } = useForm<FormData>({
-    defaultValues: {
-      name: ''
-    },
-    resolver: yupResolver(nameSchema)
-  })
-  const { setIsAuthenticated, isAuthenticated, setProfile, profile } = useContext(AppContext)
-  const navigate = useNavigate()
-  const logoutMutation = useMutation({
-    mutationFn: authAPI.logout,
-    onSuccess: () => {
-      setIsAuthenticated(false)
-      setProfile(null)
-      queryClient.removeQueries({ queryKey: ['purchases', { status: purchasesStatus.inCart }] })
-    }
-  })
+  const { isAuthenticated } = useContext(AppContext)
+  const { onSubmitSearch, register } = useSearchProduct()
+
   const { data: purchasesIncartData } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
     queryFn: () => purchaseAPI.getPurchases({ status: purchasesStatus.inCart }),
     enabled: isAuthenticated
   })
   const purchasesIncart = purchasesIncartData?.data.data
-  const handleLogout = () => {
-    logoutMutation.mutate()
-  }
-  const onSubmitSearch = handleSubmit((data) => {
-    const config = queryConfig.order
-      ? omit(
-          {
-            ...queryConfig,
-            name: data.name
-          },
-          ['order', 'sort_by']
-        )
-      : {
-          ...queryConfig,
-          name: data.name
-        }
-    navigate({
-      pathname: path.home,
-      search: createSearchParams(config).toString()
-    })
-  })
+
   return (
     <div className='bg-[linear-gradient(-180deg,#f53d2d,#f63)] pb-5 pt-2 text-white'>
       <div className='container'>
-        <div className='flex justify-end'>
-          <Popover
-            className='hover:text-white/700 flex cursor-pointer items-center py-1'
-            renderPopover={
-              <div className='hover:text-white/700 relative rounded-sm border bg-white shadow-md'>
-                <button className='py-2 pl-3 pr-28 hover:text-orange'>Tiếng Việt</button>
-                <br />
-                <button className='mt-2 px-3 py-2 hover:text-orange'>日本語</button>
-              </div>
-            }
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='h-5 w-5'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 5.5-5.03 5.5-9S14.485 3 12 3m0 18c-2.485 0-5.5-5.03-5.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 5.582M12 3a8.997 8.997 0 00-7.843 5.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-5.418'
-              />
-            </svg>
-            <span className='mx-1'>Tiếng Việt</span>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='h-5 w-5'
-            >
-              <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
-            </svg>
-          </Popover>
-          {isAuthenticated && (
-            <Popover
-              className='hover:text-white/700 ml-6 flex cursor-pointer items-center py-1'
-              renderPopover={
-                <div>
-                  <Link
-                    to={path.profile}
-                    className='hover block w-full bg-white px-3 py-2 text-left hover:bg-slate-100 hover:text-cyan-500'
-                  >
-                    Tài khoản của tôi
-                  </Link>
-                  <Link
-                    to='/'
-                    className='hover block w-full bg-white px-3 py-2 text-left hover:bg-slate-100 hover:text-cyan-500'
-                  >
-                    Đơn hàng
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className='hover block w-full bg-white px-3 py-2 text-left hover:bg-slate-100 hover:text-cyan-500'
-                  >
-                    Đăng xuất
-                  </button>
-                </div>
-              }
-            >
-              <div className='h-5 w-5 flex-shrink-0'>
-                <img
-                  src='https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/batman_hero_avatar_comics-512.png'
-                  alt='avatar'
-                  className='h-full w-full rounded-full object-cover'
-                />
-              </div>
-              <div className='mx-1'>{profile?.email}</div>
-            </Popover>
-          )}
-
-          {!isAuthenticated && (
-            <div className='flex items-center'>
-              <Link to={path.register} className='mx-3 capitalize hover:text-white/70'>
-                Đăng ký
-              </Link>
-              <div className='h-4 border-r-[1px] border-r-white/40' />
-              <Link to={path.login} className='mx-3 capitalize hover:text-white/70'>
-                Đăng nhập
-              </Link>
-            </div>
-          )}
-        </div>
+        <NavHeader />
         <div className='mt-3 grid grid-cols-12 items-end gap-5'>
           <Link to={path.home} className='col-span-2'>
             <svg viewBox='0 0 192 65' className='width-full mx-5 h-12 fill-white'>
@@ -196,8 +69,8 @@ export default function Header() {
             <Popover
               placement='bottom-end'
               renderPopover={
-                <div className='relative max-w-[400px] bg-white text-left text-sm hover:bg-slate-100 hover:text-cyan-500'>
-                  {purchasesIncart ? (
+                <div className='relative  max-w-[400px] bg-white text-left text-sm hover:bg-slate-100 hover:text-cyan-500'>
+                  {purchasesIncart && purchasesIncart.length > 0 ? (
                     <div className='p-2'>
                       <div className='text-base capitalize text-gray-800'>Sản phẩm đã thêm</div>
                       <div className='mt-5'>
@@ -256,7 +129,7 @@ export default function Header() {
                     d='M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z'
                   />
                 </svg>
-                {isAuthenticated && (
+                {purchasesIncart && purchasesIncart.length > 0 && isAuthenticated && (
                   <span className='absolute left-[17px] top-[-5px] rounded-full bg-white px-[9px] py-[1px] text-xs text-orange'>
                     {purchasesIncart?.length}
                   </span>
