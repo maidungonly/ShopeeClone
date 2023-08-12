@@ -5,7 +5,6 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import RegisterLayout from './layouts/RegisterLayout'
 import MainLayout from './layouts/MainLayout'
-import Profile from './pages/Profile'
 import { AppContext } from './contexts/app.context'
 import path from './constants/path'
 import LoginLayout from './layouts/LoginLayout'
@@ -14,6 +13,7 @@ import Cart from './pages/Cart'
 import CartLayout from './layouts/CartLayout'
 import UserLayout from './pages/User/layout/UserLayout'
 import ChangePassword from './pages/User/pages/ChangePassword'
+import Profile from './pages/User/pages/Profile'
 
 function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
