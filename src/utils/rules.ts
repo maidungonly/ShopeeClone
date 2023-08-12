@@ -96,3 +96,15 @@ export const schema = yup
   })
   .required()
 export type Schema = yup.InferType<typeof schema>
+
+export const userSchema = yup.object({
+  name: yup.string().max(160, 'Độ dài tối đa là 160 ký tự'),
+  phone: yup.string().max(20, 'Độ dài tối đa là 20 ký tự'),
+  address: yup.string().max(160, 'Độ dài tối đa là 160 ký tự'),
+  date_of_birth: yup.date().max(new Date(), 'Hãy chọn ngày trong quá khứ'),
+  avata: yup.string().max(1000, 'Độ dài avata tối đa 1000 ký tự'),
+  password: schema.fields['password'],
+  newPassword: schema.fields['password'],
+  confirmPassword: schema.fields['confirm_password']
+})
+export type userSchema = yup.InferType<typeof userSchema>
