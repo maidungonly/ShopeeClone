@@ -3,7 +3,7 @@ import { SuccessResponseApi } from 'src/types/utils.type'
 import http from 'src/utils/http'
 
 interface BodyUpdateProfile extends Omit<User, '_id' | 'roles' | 'createAt' | 'updateAt' | 'email'> {
-  password: string
+  password?: string
   newPassword?: string
 }
 const userAPI = {

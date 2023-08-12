@@ -87,7 +87,10 @@ export default function NavHeader() {
         >
           <div className='h-5 w-5 flex-shrink-0'>
             <img
-              src='https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/batman_hero_avatar_comics-512.png'
+              src={
+                profile?.avata ||
+                'https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/batman_hero_avatar_comics-512.png'
+              }
               alt='avatar'
               className='h-full w-full rounded-full object-cover'
             />
