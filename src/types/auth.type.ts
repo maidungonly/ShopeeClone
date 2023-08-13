@@ -3,6 +3,6 @@ import { SuccessResponseApi } from './utils.type'
 
 export type AuthResponse = SuccessResponseApi<{
   access_token: string
-  expires: string
+  expires: number
   user: User
 }>

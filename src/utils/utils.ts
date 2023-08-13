@@ -1,5 +1,6 @@
 /* eslint-disable import/no-named-as-default-member */
 import axios, { AxiosError } from 'axios'
+import config from 'src/constants/config'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 import { number } from 'yup'
 
@@ -38,3 +39,7 @@ export const getIdFromId = (nameId: string) => {
   const arr = nameId.split('-i-')
   return arr[arr.length - 1]
 }
+export const getURLAvatarURL = (avatarName?: string) =>
+  avatarName
+    ? `${config.baseURL}images/${avatarName}`
+    : 'https://cdn4.iconfinder.com/data/icons/avatars-xmas-giveaway/128/batman_hero_avatar_comics-512.png'
