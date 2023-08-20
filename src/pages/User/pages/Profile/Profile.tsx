@@ -14,6 +14,7 @@ import { setProfileToLS } from 'src/utils/auth'
 import { getURLAvatarURL } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import config from 'src/constants/config'
 
 type FormData = Pick<userSchema, 'name' | 'address' | 'avatar' | 'phone' | 'date_of_birth'>
 type FormDataError = Omit<FormData, 'date_of_birth'> & {
@@ -102,7 +103,13 @@ export default function Profile() {
   }
   const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const fileFromLocal = event.target.files?.[0]
-    setFile(fileFromLocal)
+    if (fileFromLocal && (fileFromLocal.size >= config.maxSizeUploadAvatar || !fileFromLocal.type.includes('image'))) {
+      toast.error('Dung lượng tối đa là 1MB. Định dạng: .JPEG, .PNG', {
+        position: 'top-center'
+      })
+    } else {
+      setFile(fileFromLocal)
+    }
   }
   return (
     <div className='rounded-sm bg-white px-2 pb-20 shadow md:px-7'>
@@ -196,6 +203,10 @@ export default function Profile() {
               accept='.jpg, .jpeg, .png'
               ref={fileInputRef}
               onChange={onFileChange}
+              onClick={(event) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ;(event.target as any).value = null
+              }}
             />
             <button
               className='flex h-10 items-center justify-end rounded-lg border bg-white px-6 text-sm text-gray-600 shadow-sm'
