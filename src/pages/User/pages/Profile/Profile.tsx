@@ -15,6 +15,7 @@ import { getURLAvatarURL } from 'src/utils/utils'
 import { ErrorResponseApi } from 'src/types/utils.type'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import config from 'src/constants/config'
+import InputFile from 'src/components/InputFile'
 
 type FormData = Pick<userSchema, 'name' | 'address' | 'avatar' | 'phone' | 'date_of_birth'>
 type FormDataError = Omit<FormData, 'date_of_birth'> & {
@@ -111,6 +112,9 @@ export default function Profile() {
       setFile(fileFromLocal)
     }
   }
+  const handleChangeFile = (file?: File) => {
+    setFile(file)
+  }
   return (
     <div className='rounded-sm bg-white px-2 pb-20 shadow md:px-7'>
       <div className='border-b border-b-gray-200 py-6 text-left'>
@@ -197,24 +201,7 @@ export default function Profile() {
                 className='h-full w-full rounded-full object-cover'
               />
             </div>
-            <input
-              className='hidden'
-              type='file'
-              accept='.jpg, .jpeg, .png'
-              ref={fileInputRef}
-              onChange={onFileChange}
-              onClick={(event) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                ;(event.target as any).value = null
-              }}
-            />
-            <button
-              className='flex h-10 items-center justify-end rounded-lg border bg-white px-6 text-sm text-gray-600 shadow-sm'
-              type='button'
-              onClick={handleUpload}
-            >
-              Chọn ảnh
-            </button>
+            <InputFile onChange={handleChangeFile} />
             <div className='mt-3 text-gray-600'>
               <div>Dung lượng tối đa là 1MB</div>
               <div>Định dạng: .JPEG, .PNG </div>
